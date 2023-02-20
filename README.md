@@ -28,8 +28,45 @@
   - SUMMARY:
 
 - LIFETIME MANAGEMENT:
-  - Explore different lifetimes:
+  - Explore different lifetimes: When will the DI container create a new instance?
+    - Transient: A new instamce is created every time a type is requested.
+      - Scope is a sub-container. NOTE: Resolving on the scope results in a new instance as well.
+      ```csharp
+        var one = host.Services.GetService<Interface>();
+        var two = host.Services.GetService<Interface>();
+        var equal = Object.ReferenceEquals(one, two); // false
+      ```
+      - When resolving the same type multiple times, a new instance will be returned every time.
+    - Scoped: A new instance is created once per scope, and then reused in the scope.
+      - Most difficult to understand. e.g.: Container with two seperate scopes under it.
+        - First scope returns a new instance.
+        - Second scope returns a new instance.
+          ```csharp
+            using var scope1 = host.Services.CreateScope();
+            var one = scope1.ServiceProvider.GetRequiredService<Interface>();
+            var two = scope1.ServiceProvider.GetRequiredService<Interface>();
+            var equal1 = Object.ReferenceEquals(one, two); // true
+
+            using var scope2 = host.Services.CreateScope();
+            var three = scope1.ServiceProvider.GetRequiredService<Interface>();
+            var four = scope1.ServiceProvider.GetRequiredService<Interface>();
+            var equal2 = Object.ReferenceEquals(one, three); // false
+            var equal3 = Object.ReferenceEquals(three, four); // true
+          ```
+    - Singleton: A new instance is created once and reused from then onward.
+      - Scope is a sub-container. NOTE: Resolving on the scope results in the same instance as well.
+      ```csharp
+        var one = host.Services.GetService<Interface>();
+        var two = host.Services.GetService<Interface>();
+        var equal = Object.ReferenceEquals(one, two); // true
+      ```
+      - When resolving the same type multiple times on the same container, the same instance will be returned every time.
+  - Service Locator Pattern. Generally not recommended:
+    ```csharp
+      var context = scope.ServiceProvider.GetRequiredService<IProductTransformationContext>();
+    ```
   - Dependency captivity:
+    - 
 
 - EXPANDING THE PRODUCT IMPORTER:
 

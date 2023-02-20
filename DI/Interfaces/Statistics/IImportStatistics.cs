@@ -3,7 +3,8 @@
 	public interface IImportStatistics
 	{
 		void IncrementImportCount();
-		void IncrementOutputCount();
+        void IncrementTransformationCount();
+        void IncrementOutputCount();
 		string GetStatistics();
 	}
 }
