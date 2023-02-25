@@ -24,9 +24,13 @@ namespace DI.Transformers
 
             var name = scope.ServiceProvider.GetRequiredService<INameDecapitalizer>();
             var currency = scope.ServiceProvider.GetRequiredService<ICurrencyNormalizer>();
+            var reference = scope.ServiceProvider.GetRequiredService<IReferenceAdder>();
 
             name.Execute();
             currency.Execute();
+            reference.Execute();
+
+            Thread.Sleep(5000);
 
             if (context.IsProductChanged())
             {

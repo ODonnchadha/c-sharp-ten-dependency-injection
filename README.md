@@ -66,7 +66,37 @@
       var context = scope.ServiceProvider.GetRequiredService<IProductTransformationContext>();
     ```
   - Dependency captivity:
-    - 
+    - Generate a reference for a product every time that it is imported.
+    - NOTE: ReferenceGenerator implements DateTimeProvider. This makes IDateTimeProvider a "Singleton" as well.
+      ```csharp
+        services.AddSingleton<IReferenceGenerator, ReferenceGenerator>();
+        services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+      ```
+    - Turn on ValidateScopes. You will rewceive descriptive errors during run time.
+      - e.g.: "Cannot consume scoped service from singleton."
+      - Not all dependency captivitiy errors are captured by this.
+        ```csharp
+            using var host = Host.CreateDefaultBuilder(args)
+                .UseDefaultServiceProvider((context, options) =>
+                {
+                    options.ValidateScopes = true;
+                }).ConfigureServices((null, null));
+        ```
+      - Solution: ReferenceGenerator as scoped. 
+        - Add a new singleton Incrementing counter and leave the date time provider as scoped.
+  - Choosing the correct lifetime:
+    - Pointers: How an implementating type handles state is the best indicator for choosing a lifetime.
+      - If there is no state at all, choose transient.
+      - If the state is derived or can be calculated on the fly, choose transient.
+      - Move to scoped or singleton only when performance issues are apparent.
+      - If the state relates to a single item, request or context, and needs to be sgared between dependending classes, choose scoped.
+      - If the state relates to everything in the application, choose singleton.
+      - Shy away from (too many) custom scopes. Leave that to the framework.
+    - Lifetime-related bugs: Chosing an incorrect lifetime can lead to unexpected behaviours, also known as bugs.
+      - When in doubt, error on the side of transient.
+      - Check your framework! Use their recommendations.
+        - e.g.: DbContext. The lifetime should correspond to the unit of work (transient.) In practice: Scoped.
+        - e.g.: CosmosClient: Thread-safe and intended for reuse. A single instance is recommended. Hence: Singleton.
 
 - EXPANDING THE PRODUCT IMPORTER:
 

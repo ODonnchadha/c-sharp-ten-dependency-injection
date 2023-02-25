@@ -5,15 +5,21 @@ namespace DI.Generators
 {
     public class ReferenceGenerator : IReferenceGenerator
     {
-        private int counter = -1;
+        private int i = -1;
         private readonly IDateTimeProvider provider;
-        public ReferenceGenerator(IDateTimeProvider provider) => this.provider = provider;
+        private readonly IIncrementingCounter counter;
+        public ReferenceGenerator(IDateTimeProvider provider, IIncrementingCounter counter)
+        {
+            this.counter = counter;
+            this.provider = provider;
+        }
+
         public string GetReference()
         {
-            counter++;
+            i++;
 
             var dt = provider.GetUtcDateTime();
-            var reference = $"{dt:yyyy-MM-ddTHH:mm:ss.FFF}-{counter:D4}";
+            var reference = $"{dt:yyyy-MM-ddTHH:mm:ss.FFF}-{counter.GetNext():D4}";
 
             return reference;
         }

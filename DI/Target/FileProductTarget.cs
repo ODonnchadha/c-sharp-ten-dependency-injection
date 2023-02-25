@@ -5,7 +5,7 @@ using DI.Interfaces.Statistics;
 
 namespace Module2.BeforeDI.Target;
 
-public class ProductTarget : IProductTarget
+public class FileProductTarget : IProductTarget
 {
     private readonly Configuration configuration;
 	private readonly IImportStatistics statistics;
@@ -13,7 +13,7 @@ public class ProductTarget : IProductTarget
 
     private StreamWriter? _streamWriter;
 
-    public ProductTarget(
+    public FileProductTarget(
         Configuration configuration, IImportStatistics statistics, IProductFormatter formatter)
     {
         this.configuration = configuration;
